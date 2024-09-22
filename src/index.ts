@@ -1,48 +1,65 @@
 import * as cheerio from "cheerio";
 
+// If testing new functionality, set this to true
+// It will not process using the Workers fn 
+// unless the debug query param is set
+const DEBUG_GATE = false
+
 export default {
   async fetch(request: Request, env: {}, ctx: ExecutionContext) {
-    ctx.passThroughOnException();
-
     const url = new URL(request.url);
-    const response = await fetch(request);
+    const debug = url.searchParams.get("debug");
+    const urlWithoutParams = url.toString().split("?")[0];
+    const response = await fetch(urlWithoutParams);
 
-    const ignoreExts = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico"];
-    const ignorePaths = ["/feed"];
-
-    if (
-      ignoreExts.includes(url.pathname.split(".").pop()) ||
-      ignorePaths.includes(url.pathname)
-    ) {
+    if (!debug && DEBUG_GATE) {
       return response;
     }
 
-    const html = await response.text();
-    const $ = cheerio.load(html);
+    try {
+      const ignoreExts = [".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico"];
+      const ignorePaths = ["/feed"];
 
-    let title = $("title").text().trim();
+      if (
+        ignoreExts.includes(url.pathname.split(".").pop()) ||
+        ignorePaths.includes(url.pathname)
+      ) {
+        return response;
+      }
 
-    if (title) {
-      const encodedTitle = encodeURIComponent(title);
-      const ogImageUrl = `https://og-link.signalnerve.workers.dev/image/og.png?title=${encodedTitle}`;
+      const newResp = response.clone();
+      const html = await newResp.text();
+      const $ = cheerio.load(html);
 
-      $('meta[property="og:image"]').remove();
-      $("head").append(`<meta property="og:image" content="${ogImageUrl}">`);
+      let title = $("title").text().trim();
 
-      $('meta[property="twitter:card"]').remove();
-      $("head").append(`<meta property="twitter:card" content="summary_large_image">`);
+      if (title) {
+        const encodedTitle = encodeURIComponent(title);
+        const ogImageUrl = `https://og-link.signalnerve.workers.dev/image/og.png?title=${encodedTitle}`;
 
-      const modifiedHtml = $.html();
-      return new Response(modifiedHtml, {
-        headers: {
-          "Content-Type": "text/html",
-          ...Object.fromEntries(response.headers),
-        },
+        $('meta[property="og:image"]').remove();
+        $("head").append(`<meta property="og:image" content="${ogImageUrl}">`);
+
+        $('meta[property="twitter:card"]').remove();
+        $("head").append(`<meta property="twitter:card" content="summary_large_image">`);
+
+        const modifiedHtml = $.html();
+        return new Response(modifiedHtml, {
+          headers: {
+            "Content-Type": "text/html",
+            ...Object.fromEntries(response.headers),
+          },
+        });
+      }
+
+      return new Response(html, {
+        headers: response.headers,
+      });
+    } catch (e: any) {
+      console.log(e)
+      return new Response(e.message, {
+        status: 500,
       });
     }
-
-    return new Response(html, {
-      headers: response.headers,
-    });
   },
 };
