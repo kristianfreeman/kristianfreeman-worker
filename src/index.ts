@@ -34,6 +34,8 @@ export default {
       let title = $("title").text().trim();
 
       if (title) {
+        // bearblog adds this, remove it
+        title = title.replace(' | Kristian Freeman', '');
         const encodedTitle = encodeURIComponent(title);
         const ogImageUrl = `https://og.kristianfreeman.com/image/og.png?title=${encodedTitle}`;
 
