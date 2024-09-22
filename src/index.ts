@@ -35,7 +35,7 @@ export default {
 
       if (title) {
         const encodedTitle = encodeURIComponent(title);
-        const ogImageUrl = `https://og-link.signalnerve.workers.dev/image/og.png?title=${encodedTitle}`;
+        const ogImageUrl = `https://og.kristianfreeman.com/image/og.png?title=${encodedTitle}`;
 
         $('meta[property="og:image"]').remove();
         $('meta[property="twitter:image"]').remove();
