@@ -38,7 +38,9 @@ export default {
         const ogImageUrl = `https://og-link.signalnerve.workers.dev/image/og.png?title=${encodedTitle}`;
 
         $('meta[property="og:image"]').remove();
+        $('meta[property="twitter:image"]').remove();
         $("head").append(`<meta property="og:image" content="${ogImageUrl}">`);
+        $("head").append(`<meta property="twitter:image" content="${ogImageUrl}">`);
 
         $('meta[property="twitter:card"]').remove();
         $("head").append(`<meta property="twitter:card" content="summary_large_image">`);
