@@ -56,14 +56,6 @@ export default {
         });
       }
 
-      // Find a link tag that has "pygmentify" in the href,
-      // such as <link rel="stylesheet" href="/static/pygmentify/css/default.min.css">
-      const linkTag = $('link[href="/static/pygmentify/css/default.min.css"]');
-      // If there is a link tag, remove it
-      if (linkTag.length > 0) {
-        linkTag.remove();
-      }
-
       return new Response(html, {
         headers: response.headers,
       });
