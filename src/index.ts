@@ -28,6 +28,8 @@ export default {
         return response;
       }
 
+      console.log("Processing", url.toString());
+
       const newResp = response.clone();
       const html = await newResp.text();
       const $ = cheerio.load(html);
