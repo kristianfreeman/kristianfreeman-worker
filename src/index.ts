@@ -8,6 +8,7 @@ const DEBUG_GATE = false
 export default {
   async fetch(request: Request, env: {}, ctx: ExecutionContext) {
     const url = new URL(request.url);
+    console.log("Fetching", url.toString());
     const debug = url.searchParams.get("debug");
     const urlWithoutParams = url.toString().split("?")[0];
     const response = await fetch(urlWithoutParams);
