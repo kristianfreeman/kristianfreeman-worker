@@ -7,6 +7,10 @@ routes = [
   { pattern = "kristianfreeman.com/*", zone_name = "kristianfreeman.com" }
 ]
 
+[[kv_namespaces]]
+binding = "KV"
+id = "007c72fa47c74435bbc2a09bcda42bb4"
+
 [observability]
 enabled = true
 
